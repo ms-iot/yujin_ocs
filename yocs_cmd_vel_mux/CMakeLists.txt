@@ -4,9 +4,20 @@ find_package(catkin REQUIRED COMPONENTS roscpp pluginlib nodelet dynamic_reconfi
 
 # pkg-config support
 find_package(PkgConfig)
-pkg_search_module(yaml-cpp REQUIRED yaml-cpp)
+if(MSVC)
+        find_package(yaml-cpp REQUIRED yaml-cpp)
+else()
+        pkg_search_module(yaml-cpp REQUIRED yaml-cpp)
+        # todo: fall back to find_package if pkg_search_module does not find yaml-cpp
+endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+if(MSVC)
+        if(NOT CMAKE_CXX_STANDARD)
+                set(CMAKE_CXX_STANDARD 11)
+        endif()
+else()
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+endif()
 
 if(NOT ${yaml-cpp_VERSION} VERSION_LESS "0.5")
 add_definitions(-DHAVE_NEW_YAMLCPP)
@@ -29,6 +40,7 @@ add_library(${PROJECT_NAME}_nodelet src/cmd_vel_mux_nodelet.cpp src/cmd_vel_subs
 add_dependencies(${PROJECT_NAME}_nodelet geometry_msgs_gencpp)
 add_dependencies(${PROJECT_NAME}_nodelet ${PROJECT_NAME}_gencfg)
 
+# message(FATAL_ERROR "YAML-CPP libraries: ${yaml-cpp_INCLUDE_DIRS}, ${yaml-cpp_LIBRARIES}")
 target_link_libraries(${PROJECT_NAME}_nodelet ${catkin_LIBRARIES} ${yaml-cpp_LIBRARIES})
 
 install(TARGETS ${PROJECT_NAME}_nodelet
