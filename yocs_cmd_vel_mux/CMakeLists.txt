@@ -3,7 +3,7 @@ project(yocs_cmd_vel_mux)
 find_package(catkin REQUIRED COMPONENTS roscpp pluginlib nodelet dynamic_reconfigure geometry_msgs)
 
 # check find_package first
-find_package(yaml-cpp REQUIRED)
+find_package(yaml-cpp QUIET)
 if(NOT yaml-cpp_FOUND)
     # requires pkg-config support
     find_package(PkgConfig)
